@@ -1,1 +1,1 @@
-# big_data_assignments
+# Assignments for the CS322 Course on Big Data
