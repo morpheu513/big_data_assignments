@@ -87,6 +87,22 @@ hadoop jar '/home/morpheus/hadoop/hadoop-3.2.0/share/hadoop/tools/lib/hadoop-str
 -input /input/plane_carriers.ndjson \
 -output /output/task_2
 ```
+In our case the ```mapper.py``` in both "task_1" and "task_2" take arguments thus we should pass arguments into them.
+This can be done by specifying the arguments in our hadoop map reduce command in the following way:
+```
+hadoop jar '/home/morpheus/hadoop/hadoop-3.2.0/share/hadoop/tools/lib/hadoop-streaming-3.2.0.jar' \
+-mapper '/home/morpheus/big_data_assignments/assignment_1/task_1/mapper.py "airplane" ' \ 
+-reducer '/home/morpheus/Big_Data_assignments/Week_1/reducer.py' \ 
+-input /input/plane_carriers.ndjson \
+-output /output/task_2
+```
+The mapper in task 1 takes one of the following arguments:
+```
+airplane
+aircraft carrier
+```
+
+The mapper in the 2nd task takes 2 arguments the first one being similar to the mapper in task 1 and the second argument is integer number ```k```
 
 ### Step 4: Displaying output
 
