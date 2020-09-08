@@ -1,35 +1,50 @@
-#v2 is ready bichhesss
-#im sending test ndjson for easier use or else death with that many values
-import pandas as pd
+#!/usr/bin/python
+"""mapper.py"""
+
 import datetime
-var='airplane'
-myBoy=pd.read_json('test.ndjson', lines=True)
-cond1=myBoy[myBoy['word'] == var]
-cond2=cond1[cond1['recognized']==True] 
-for i in range(len(cond2.index)):
-    print(var+":1") #change this to stdout later
-#have fun reducing bbz
+import json
+import sys
+var="airplane"
+#current variable for input is var
+
+# Function to check if a record is bad or not
+def isValid(airplane_record):
+    wo = airplane_record['word']
+    cc = airplane_record['countrycode']
+    re = airplane_record['recognized']
+    ki = airplane_record['key_id']
+    dr = airplane_record['drawing']
+
+    if not all(x.isalpha() or x.isspace() for x in wo):
+        #print("fail 1")
+        return False
+    if not (cc.isupper() and len(cc)==2):
+        #print("fail 2")
+        return False
+    if not (str(re)=='True' or str(re)=='False'):
+        #print("fail 3")
+        #print(str(re));
+
+        return False
+    if not (ki.isdecimal() and len(ki)==16):
+        #print("fail 4")
+
+        return False
+    if len(dr) < 1:
+        #print("fail 5")
+
+        return False
+    for arr in dr:
+        if len(arr)!=2:
+            #print("fail 6")
+
+            return False
+    return True
 
 
-print("OUTPUT GAP BETWEEN BOTH THE MAPPERS") #self explanatory chingchong
-
-#chennaiaiaiaiaiaia chennai express
-#same myBoy dataframe
-var='airplane'
-myGirl=pd.read_json('test.ndjson', lines=True)
-cond1=myGirl[myGirl['word'] == var]
-cond2=cond1[cond1['recognized']==False] #False here
-reqColumn=list(cond2['timestamp'])
-for newbaby in reqColumn:
-    newbaby=str(newbaby)
-    year=int(newbaby[0:4])
-    month=int(newbaby[5:7])
-    day=int(newbaby[8:10])
-    currDate=datetime.datetime(year, month, day)
-    dayNo=currDate.weekday()
-
-    if dayNo>4:
-        print(var+":1") #change this to stdout later
-
-
-#reducer for this also jai
+for line in sys.stdin:
+    airplane_record = json.loads(line)
+    if (isValid(airplane_record)):
+        if airplane_record['word']==var:
+            if str(airplane_record['recognized'])=='True':
+                print('%s\t%s' % (var, 1))

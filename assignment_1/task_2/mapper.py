@@ -1,9 +1,14 @@
+#!/usr/bin/python
+"""mapper.py"""
+
 import datetime
 import json
 import sys
 var='airplane'
 k =50
-#mapper, current variable for input is var
+#mapper, current variable for input is var and k
+
+# Function to check if a record is bad or not
 def isValid(airplane_record):
     wo = airplane_record['word']
     cc = airplane_record['countrycode']
@@ -12,27 +17,27 @@ def isValid(airplane_record):
     dr = airplane_record['drawing']
 
     if not all(x.isalpha() or x.isspace() for x in wo):
-        print("fail 1")
+        #print("fail 1")
         return False
     if not (cc.isupper() and len(cc)==2):
-        print("fail 2")
+        #print("fail 2")
         return False
     if not (str(re)=='True' or str(re)=='False'):
-        print("fail 3")
-        print(str(re));
+        #print("fail 3")
+        #print(str(re));
 
         return False
     if not (ki.isdecimal() and len(ki)==16):
-        print("fail 4")
+        #print("fail 4")
 
         return False
     if len(dr) < 1:
-        print("fail 5")
+        #print("fail 5")
 
         return False
     for arr in dr:
         if len(arr)!=2:
-            print("fail 6")
+            #print("fail 6")
 
             return False
     return True
