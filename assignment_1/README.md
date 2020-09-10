@@ -16,6 +16,18 @@ This is written assuming yo already have hadoop and yarn installed in pesudo dis
 ### Step 1: Starting Hadoop
 Start hadoop's distributed file system using:
 ```
+start-all.sh
+```
+This should start all processes at once and can be seen by typing in ```jps```:
+```
+SecondaryNameNode
+NameNode
+NodeManager
+DataNode
+ResourceManager
+Jps
+```
+```
 start-dfs.sh
 ```
 
