@@ -3,6 +3,7 @@ Chuck code for the Second assignment here.
 
 ## Spec Sheet:
 The link to the specification sheet can be found [here](https://forum.pesu.io/uploads/short-url/mAlIiisafHf7Ovcz3L0CkdyZlrI.pdf)
+The detailed specifications can be found on [forums](https://forum.pesu.io/t/assignment-2-updated-specifications-latest/13533)
 
 ## Dataset link:
 The Data set can be downloaded from [here](https://snap.stanford.edu/data/web-Google.txt.gz)
