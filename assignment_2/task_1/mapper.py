@@ -9,5 +9,5 @@ for line in sys.stdin:
     ip = line.split()
     from_node = ip[0]
     to_node = ip[1]
-    if from_node != '#' and from_node != to_node:
+    if from_node != '#':
         print(from_node,"\t",to_node)
