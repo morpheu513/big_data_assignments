@@ -19,4 +19,7 @@ for line in sys.stdin:
 		adj_list = ip[1].split(",")
 		length = len(adj_list)
 		for i in adj_list:
-			print(i,"\t",float(my_dict[i])/length)
+			if length == 0:
+				print(i,"\t",0)
+			else:
+				print(i,"\t",float(my_dict[i])/length)
