@@ -14,9 +14,10 @@ for i in f:
 
 for line in sys.stdin:
 	ip = line.split("\t")
-	if len(ip) > 1:
+	if len(ip) > 1 and ip[1] != '\n':
 		ip[1] = ip[1].rstrip("\n")
 		adj_list = ip[1].split(",")
 		length = len(adj_list)
 		for i in adj_list:
-			print(i,"\t",float(my_dict[i])/length)
+			if i in my_dict.keys():
+				print(i,"\t",float(my_dict[i])/length)
