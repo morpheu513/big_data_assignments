@@ -14,7 +14,7 @@ for line in sys.stdin:
 			curr_node = from_node
 		else:
 			final_pr=0.15 + (0.85*sum(node_adj_list))
-			print(curr_node,",","%.5f" % final_pr)
+			print(curr_node,"%.5f" % final_pr,sep=",")
 			node_adj_list = list()
 			node_adj_list.append(to_node)
 			curr_node = from_node
@@ -23,7 +23,7 @@ for line in sys.stdin:
 
 if(curr_node == from_node):
 	final_pr=0.15+(0.85*sum(node_adj_list))
-	print(curr_node,",","%.5f" % final_pr)
+	print(curr_node,"%.5f" % final_pr,sep=",")
 
 
 

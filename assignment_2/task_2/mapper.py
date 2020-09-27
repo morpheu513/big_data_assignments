@@ -21,3 +21,4 @@ for line in sys.stdin:
 		for i in adj_list:
 			if i in my_dict.keys():
 				print(i,"\t",float(my_dict[i])/length)
+		print(ip[0],"\t","0")
