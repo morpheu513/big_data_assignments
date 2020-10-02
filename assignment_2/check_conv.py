@@ -2,17 +2,17 @@ import shutil
 import os
 count=0
 n=0
-conv =0.5 #this value will vary for different test cases in the backend
-def rewrite_pagerank():
-	os.remove("/home/morpheus/big_d/task_1/v")
+conv =0.5 
 
-	source = "/home/morpheus/v1"
-	destination = "/home/morpheus/big_d/task_1/v"
+def rewrite_pagerank():
+	os.remove("/home/morpheus/big_data_assignments/assignment_2/v") #change the path
+	source = "/home/morpheus/big_data_assignments/assignment_2/v1"  #change the path
+	destination = "/home/morpheus/big_data_assignments/assignment_2/v" #change the path
 	dest = shutil.copyfile(source, destination) 
 
 
 
-with open("/home/morpheus/big_d/task_1/v") as file1, open("/home/morpheus/v1") as file2:
+with open("/home/morpheus/big_data_assignments/assignment_2/v") as file1, open("/home/morpheus/big_data_assignments/assignment_2/v1") as file2:  #change the path
 	for line1, line2 in zip(file1, file2):
 		count+=1
 		old_pagerank=float(line1.split(",")[1])

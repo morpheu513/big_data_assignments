@@ -11,7 +11,7 @@ The lord yeetith and the lord yoinkith away
 
 ## Running Hadoop Map-Reduce:
 Since get hadoop up and running is a big pain, here are the list of steps youll need to do to get your hadoop map-reduce up and running. 
-This is written assuming yo already have hadoop and yarn installed in pesudo distributed mode.
+This is written assuming you already have hadoop and yarn installed in pesudo distributed mode.
 
 ### Step 1: Starting Hadoop
 Start hadoop's distributed file system using:
