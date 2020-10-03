@@ -13,7 +13,7 @@ f=open(var,'r')
 my_dict={}
 
 for i in f:
-	a=i.split(", ")
+	a=i.split(",")
 	my_dict.update({a[0]:a[1].strip()})
 
 for line in sys.stdin:
