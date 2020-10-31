@@ -1,5 +1,5 @@
 # Assignment 2
-Chuck code for the Second assignment here. 
+Chuck code for the second assignment here. 
 
 ## Spec Sheet:
 The link to the specification sheet can be found [here](https://forum.pesu.io/uploads/short-url/mAlIiisafHf7Ovcz3L0CkdyZlrI.pdf)
