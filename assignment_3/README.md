@@ -33,6 +33,8 @@ export SPARK_HOME=/usr/local/spark-3.0.0-bin-hadoop3.2
 #change the above location to where you have extracted spark 
 
 export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+
+export PYSPARK_PYTHON=python3
 ```
 Save this file and type ``` source ~/.bashrc```
 <br>
