@@ -26,6 +26,7 @@ To open the bashrc file using nano type:
 ```
 sudo nano ~/.bashrc
 ```
+
 Once opened add these lines at the bottom:
 ```
 # Spark Variables
@@ -43,10 +44,12 @@ Add these line into your ```$SPARK_HOME/bin/load-spark-env.sh``` file:
 export SPARK_LOCAL_IP="127.0.0.1"
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ```
+
 To check if it's installed properly. Start all hadoop daemons by typing:
 ```
 start-all.sh
 ```
+
 To check if you've set up all variables correctly type the following command:
 ```
 spark-submit --version
@@ -100,7 +103,25 @@ To browse the YARN resource manager and see all running clusters go to your brow
 ```
 http://localhost:8088/cluster
 ```
+## Running Spark Jobs:
+To run a spark job follow these steps:
+1. First start all of hadoops daemons by typing ```start-all.sh```. 
+alternatively you can start hadoops dfs first by typing ```start-dfs.sh``` then followed by ```start-yarn.sh``` to start YARN.
+2. You need to upload both the datasets onto hadoop. This can be done my executing the following commands:
+```
+hdfs dfs -mkdir /<Dir-Name> #use this only if you want to make a directory on hadoop before uploading
 
+hdfs dfs -put '<path-to-file-on-host-pc>' /<path-to-directory-on-hdfs>
+```
+3. Running the job:
+      * Task 1: The spark job can be run by executing the following command(only for task 1):
+      ```
+      spark-submit <filename.py> <word> hdfs://localhost:9000/<pth-to-dataset-1> hdfs://localhost:9000/<path-to-dataset-2>
+      ```
+      * Task 2: The spark job can be run by executing the following command(only for task 2):
+      ```
+      spark-submit <filename.py> <word> <strokes> hdfs://localhost:9000/<path-to-dataset-1> hdfs://localhost:9000/<path-to-dataset-2>
+      ```
 ## Hands on Session:
 The hands on session with Spark can be found [here](https://vimeo.com/459272013/f8197d7732)
 <br>
