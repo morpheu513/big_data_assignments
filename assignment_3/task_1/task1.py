@@ -18,12 +18,17 @@ df = spark.read.csv(path2,header='true')
 rec = df.filter((df['word']==w) & (df['recognized']=='True') ).groupBy('word').agg({"Total_Strokes":"avg"}).collect()
 unrec = df.filter((df['word']==w) & (df['recognized']=='False')).groupBy('word').agg({"Total_Strokes":"avg"}).collect()
 
-for i,j in rec:
-	print(round(j,5));
+if rec:
+        for i,j in rec:
+	        print(round(j,5));
+else:
+        print("0.00000")
 
-for i,j in unrec:
-	print(round(j,5));
-
+if unrec:
+        for i,j in unrec:
+	        print(round(j,5));
+else:
+        print("0.00000")
 
 
 
