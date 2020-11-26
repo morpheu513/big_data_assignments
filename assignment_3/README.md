@@ -44,15 +44,21 @@ Once opened add these lines at the bottom:
 export SPARK_HOME=/usr/local/spark-3.0.0-bin-hadoop3.2
 #change the above location to where you have extracted spark 
 
+export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip:$PYTHONPATH
+
 export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
 
 export PYSPARK_PYTHON=python3
 ```
 Save this file and type ``` source ~/.bashrc```
 <br>
-Add these line into your ```$SPARK_HOME/bin/load-spark-env.sh``` file:
+Now you have to edit your ```$SPARK_HOME/bin/load-spark-env.sh``` file:
+First open the file by typing:
 ```
-export SPARK_LOCAL_IP="127.0.0.1"
+sudo nano $SPARK_HOME/bin/load-spark-env.sh
+```
+Then add this line:
+```
 export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ```
 
