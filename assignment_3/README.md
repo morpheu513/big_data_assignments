@@ -21,12 +21,7 @@ Once thats done extract the files into
 /usr/local
 ```
 <br>
-To move the file into '/usr/local', type this in terminal:
-```
-sudo mv filename /usr/local
-```
 Add these lines into the bashrc file:
-<br>
 To open the bashrc file using nano type:
 ```
 sudo nano ~/.bashrc
