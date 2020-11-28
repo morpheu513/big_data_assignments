@@ -1,16 +1,80 @@
 import socket
+import threading
+import time
 
 import sys
 
-if __name__ == '__main__'
+def add_to_pool(task_id,duration):
+    poolLock.acquire()
+    print("append acquired")
+
+    pool.append([task_id,duration])
+
+    poolLock.release()
+    print("append released")
+
+def listen_to_master():
+
+    task_launch_message = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    task_launch_message.bind(messages_addr)
+    task_launch_message.listen()
+    while True:
+        print("Listening to master....")
+        conn, master_address = task_launch_message.accept()
+        while True:
+            data = conn.recv(2048)
+            if data:
+                task_id,duration=data.split(',')
+                add_to_pool(task_id,int(duration))
+                pass
+            else:
+                print("Master chan is silent")
+                break
+        conn.close()
+
+def sendNotif(task_id):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as toMaster:
+		toMaster.connect(("localhost", 5001))
+		message=task_id
+		#send task
+		toMaster.send(message.encode())
+
+
+def working():
+    while True:
+
+        poolLock.acquire()
+        print("working acquired")
+
+        time.sleep(1)
+
+        for i in range(len(pool)):
+            pool[i][1]=pool[i][1]-1
+            if pool[i][1]==0:
+                sendNotif(pool[i][0])
+                pool.pop(i)
+        
+        poolLock.release()
+        print("working released")
+
+            
+
+
+
+if __name__ == '__main__':
 
     port  = int(sys.argv[1])
     worker_id = sys.argv[2]
-
     messages_addr = ('localhost', port)
 
-    task_launch_message = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    poolLock=threading.Lock()
 
-    task_launch_message.bind(messages_addr)
+    pool=[]
 
+    masterListen = threading.Thread(target=listen_to_master,args=((messages_addr),))
+    masterListen.start()
+
+    doTask= threading.Thread(target=working)
+
+    
     
