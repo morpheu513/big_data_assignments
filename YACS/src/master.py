@@ -3,6 +3,7 @@ import threading
 
 import sys, json
 
+def round_robin()
 
 def listen_incoming_jobs(receive_jobs_addr):
     jobs_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,8 +18,18 @@ def listen_incoming_jobs(receive_jobs_addr):
             #print("Acquired job lock")
             data = conn.recv(2048)
             if data:
-                print(data)
-                pass
+                data = data.decode('utf-8')
+                data = json.loads(data) 
+
+                job_id = data["job_id"]
+                map_tasks = data["map_tasks"]
+                reduce_tasks = data["reduce_tasks"]
+
+                for i in map_tasks:
+
+
+                print(data["job_id"])
+                
             else:
                 print("No more incoming jobs..")
                 break
