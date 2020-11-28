@@ -13,7 +13,7 @@ def add_to_pool(task_id,duration):
     poolLock.release()
     print("append released")
 
-def listen_to_master():
+def listen_to_master(messages_addr):
 
     task_launch_message = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     task_launch_message.bind(messages_addr)
@@ -24,6 +24,7 @@ def listen_to_master():
         while True:
             data = conn.recv(2048)
             if data:
+                data = data.decode('utf-8')
                 task_id,duration=data.split(',')
                 add_to_pool(task_id,int(duration))
                 pass

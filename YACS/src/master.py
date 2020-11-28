@@ -72,6 +72,15 @@ if __name__ == '__main__':
     config_file = open(path_to_config)
     config = json.load(config_file)
 
+    workers_array = list()
+
+    for i in config["workers"]:
+        temp = list()
+        temp.append(i["worker_id"])
+        temp.append(i["slots"])
+        temp.append(i["port"])
+        workers_array.append(temp)
+
     receive_jobs_addr = ('localhost', 5000)
     worker_updates_addr = ('localhost', 5001)
 
