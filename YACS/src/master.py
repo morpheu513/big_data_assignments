@@ -3,7 +3,8 @@ import threading
 
 import sys, json
 
-def round_robin()
+def round_robin():
+    pass
 
 def listen_incoming_jobs(receive_jobs_addr):
     jobs_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,9 +27,9 @@ def listen_incoming_jobs(receive_jobs_addr):
                 reduce_tasks = data["reduce_tasks"]
 
                 for i in map_tasks:
+                    print(i)
 
-
-                print(data["job_id"])
+                #print(data["job_id"])
                 
             else:
                 print("No more incoming jobs..")
