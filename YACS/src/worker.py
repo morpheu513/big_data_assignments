@@ -2,11 +2,15 @@ import socket
 
 import sys
 
-port  = int(sys.argv[1])
-worker_id = sys.argv[2]
+if __name__ == '__main__'
 
-messages_addr = ('localhost', port)
+    port  = int(sys.argv[1])
+    worker_id = sys.argv[2]
 
-master_message_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    messages_addr = ('localhost', port)
 
-master_message_sock.bind(messages_addr)
+    task_launch_message = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    task_launch_message.bind(messages_addr)
+
+    
