@@ -21,12 +21,16 @@ def listen_incoming_jobs(receive_jobs_addr):
         print("Listening to jobs....")
         conn, client_address = jobs_sock.accept()
         while True:
+            finalAnswer.acquire()
+            print("Acquired worker lock")
             data = conn.recv()
             if data:
                 pass
             else:
                 print("No more incoming jobs..")
                 break
+            finalAnswer.release()
+            print("Released worker lock")
 
         conn.close()
 
@@ -40,11 +44,23 @@ def listen_worker_updates(worker_updates_addr):
         print("Listening to Updates from workers....")
         conn, worker_address = updates_sock.accept()
         while True:
+            finalAnswer.acquire()
+            print("Acquired worker lock")
             data = conn.recv()
             if data:
                 pass
             else:
                 print("All workers have finished executing..")
                 break
+            finalAnswer.release()
+            print("Released worker lock")
 
         conn.close()
+
+finalAnswer=threading.Lock()
+
+incJob = threading.Thread(target=listen_incoming_jobs,args=((receive_jobs_addr),))
+incJob.start()
+
+incWork = threading.Thread(target=listen_worker_updates,args=((worker_updates_addr),))
+incWork.start()
