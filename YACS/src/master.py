@@ -1,9 +1,15 @@
 import socket
 import threading
-
+import random
 import sys, json
 
 def round_robin():
+    pass
+
+def random_scheduler():
+    pass
+
+def least_loaded():
     pass
 
 def listen_incoming_jobs(receive_jobs_addr):
