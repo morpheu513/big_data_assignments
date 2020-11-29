@@ -1,10 +1,26 @@
 import socket
 import threading
-
 import sys, json
+import queue
+import random
+import time
 
-def round_robin():
-    pass
+
+def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
+    dictLock.acquire()
+    queueLock.acquire()
+    print("Acquired Dict and queue lock")
+    jobDict[job_id]=[[],[]]
+    for i in map_tasks:
+        jobDict[job_id][0].append(i['task_id'])
+        mapQ.put((job_id,i['task_id'],i['duration']))
+    for j in reduce_tasks:
+        jobDict[job_id][1].append(j['task_id'])
+        redQ.put((job_id,j['task_id'],j['duration']))
+
+    queueLock.release()
+    dictLock.release()
+    print("Releasing Dict and queue lock")
 
 def listen_incoming_jobs(receive_jobs_addr):
     jobs_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,8 +42,11 @@ def listen_incoming_jobs(receive_jobs_addr):
                 map_tasks = data["map_tasks"]
                 reduce_tasks = data["reduce_tasks"]
 
+                addToDict_and_queue(job_id,map_tasks,reduce_tasks)
+
                 for i in map_tasks:
-                    print(i)
+                    pass
+                    #print(i)
 
                 #print(data["job_id"])
                 
@@ -38,6 +57,30 @@ def listen_incoming_jobs(receive_jobs_addr):
             #print("Released job lock")
 
         conn.close()
+
+def remDict(job_id,task_id):
+    dictLock.acquire()
+    print("acquired dict lock")
+
+    if 'M' in task_id:
+        jobDict[job_id][0].remove(task_id)
+    else:
+        jobDict[job_id][1].remove(task_id)
+        if jobDict[job_id][1]==[]:
+            pass #ADD LOGIC HERE FOR TASK COMPLETION
+
+    dictLock.release()
+    print("released dict lock")
+
+def updateSlots(worker_id):
+    workLock.acquire()
+    print("Work lock acquired")
+
+    workers_array[int(worker_id)-1]+=1   #might have to change logic here
+
+    workLock.release
+    print("Work lock released")
+
 
 
 def listen_worker_updates(worker_updates_addr):
@@ -53,7 +96,11 @@ def listen_worker_updates(worker_updates_addr):
             #print("Acquired worker lock")
             data = conn.recv()
             if data:
-                pass
+                data=data.decode('utf-8')
+                worker_id,job_id,task_id=data.split(',')
+                remDict(job_id,task_id)
+                updateSlots(worker_id)
+
             else:
                 print("All workers have finished executing..")
                 break
@@ -62,6 +109,111 @@ def listen_worker_updates(worker_updates_addr):
             #print("Released worker lock")
 
         conn.close()
+
+def sendTask(task,worker):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as toWorker:
+		toWorker.connect(("localhost", worker[2]))
+		message=worker[0]+','+task[0]+','+task[1]+','+task[2]
+		#send task to worker
+		toWorker.send(message.encode())
+
+
+def round_robin(item):
+    done=False
+    while not done:
+        rr_choice=(rr_choice+1)%len(workers_array)
+
+        workLock.acquire()
+        print("Work lock acquired")
+
+        if workers_array[rr_choice][1]!=0:
+            workers_array[rr_choice][1]-=1
+            
+            workLock.release()
+            print("Work lock released")
+
+            sendTask(item,workers_array[rr_choice])
+
+def least_loaded(item):
+    done=False
+    while not done:
+        workLock.acquire()
+        print("Work lock acquired")
+
+        maxWorker=0
+
+        for i in range(1,len(workers_array)):
+            if workers_array[maxWorker][1]<workers_array[i][1]:
+                maxWorker=i
+        if workers_array[i]==0:
+            time.sleep(1)
+        else:
+            sendTask(item,workers_array[maxWorker])
+            done=True
+
+        workLock.release()
+        print("Work lock released")
+
+        
+
+def random_sched(item):
+    done=False
+    while not done:
+        choice=random.randrange(0,len(workers_array))
+
+        workLock.acquire()
+        print("Work lock acquired")
+
+        if workers_array[choice][1]!=0:
+            workers_array[choice][1]-=1
+            
+            workLock.release()
+            print("Work lock released")
+
+            sendTask(item,workers_array[choice])
+
+
+
+
+def scheduleItem(item):
+    if schedule_algo=="RANDOM":
+        random_sched(item)
+    elif schedule_algo=="RR":
+        round_robin(item)
+    elif schedule_algo=="LL":
+        least_loaded(item)
+    else:
+        print("Unexpected scheduling algo, cant predict output")
+
+
+
+def slots_available():
+    for i in range(len(workers_array)):
+        if workers_array[i][0]!=0:
+            return True
+    return False
+
+def scheduleTasks():
+    while True:
+        if slots_available():
+            flag=1
+            item=-1
+            queueLock.acquire()
+            print("queue lock acquired")
+            if not redQ.empty():
+                item=redQ.queue[0]
+                if jobDict[item[0]][0]==[]:#potential dict lock needed here
+                    flag=0
+                    item=redQ.get()
+            if flag==1 and not mapQ.empty():
+                item=mapQ.get()
+            if item!=-1:
+                scheduleItem(item)
+            queueLock.release()
+            print("queue lock released")
+        
+        
+        
 
 if __name__ == '__main__':
     
@@ -74,6 +226,11 @@ if __name__ == '__main__':
 
     workers_array = list()
 
+    jobDict={}
+    
+    mapQ=queue.Queue()
+    redQ=queue.Queue()
+
     for i in config["workers"]:
         temp = list()
         temp.append(i["worker_id"])
@@ -84,10 +241,17 @@ if __name__ == '__main__':
     receive_jobs_addr = ('localhost', 5000)
     worker_updates_addr = ('localhost', 5001)
 
-    #finalAnswer=threading.Lock()
+    rr_choice=-1
+
+    dictLock=threading.lock()
+    queueLock=threading.lock()
+    workLock=threading.lock()
 
     incJob = threading.Thread(target=listen_incoming_jobs,args=((receive_jobs_addr),))
     incJob.start()
 
     incWork = threading.Thread(target=listen_worker_updates,args=((worker_updates_addr),))
     incWork.start()
+
+    scheduler=threading.Thread(target=scheduleTasks)
+    scheduler.start()
