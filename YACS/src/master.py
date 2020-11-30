@@ -9,7 +9,7 @@ import time
 def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
     dictLock.acquire()
     queueLock.acquire()
-    print("Acquired Dict and queue lock")
+   # print("Acquired Dict and queue lock")
     jobDict[job_id]=[[],[]]
     for i in map_tasks:
         jobDict[job_id][0].append(i['task_id'])
@@ -17,10 +17,12 @@ def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
     for j in reduce_tasks:
         jobDict[job_id][1].append(j['task_id'])
         redQ.put((job_id,j['task_id'],j['duration']))
-
+    print(mapQ.queue[-1])
+    print(redQ.queue[-1])
+    print("Brahmilamila")
     queueLock.release()
     dictLock.release()
-    print("Releasing Dict and queue lock")
+   # print("Releasing Dict and queue lock")
 
 def listen_incoming_jobs(receive_jobs_addr):
     jobs_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -37,7 +39,7 @@ def listen_incoming_jobs(receive_jobs_addr):
             if data:
                 data = data.decode('utf-8')
                 data = json.loads(data) 
-
+                print("GOT NEW JOB")
                 job_id = data["job_id"]
                 map_tasks = data["map_tasks"]
                 reduce_tasks = data["reduce_tasks"]
@@ -51,7 +53,7 @@ def listen_incoming_jobs(receive_jobs_addr):
                 #print(data["job_id"])
                 
             else:
-                print("No more incoming jobs..")
+                #print("No more incoming jobs..")
                 break
             #finalAnswer.release()
             #print("Released job lock")
@@ -60,26 +62,26 @@ def listen_incoming_jobs(receive_jobs_addr):
 
 def remDict(job_id,task_id):
     dictLock.acquire()
-    print("acquired dict lock")
+    #print("acquired dict lock")
 
     if 'M' in task_id:
         jobDict[job_id][0].remove(task_id)
     else:
         jobDict[job_id][1].remove(task_id)
         if jobDict[job_id][1]==[]:
-            pass #ADD LOGIC HERE FOR TASK COMPLETION
+            print("JOBS ARE ACTUALLY GETTING COMPLETED")
 
     dictLock.release()
-    print("released dict lock")
+   # print("released dict lock")
 
 def updateSlots(worker_id):
     workLock.acquire()
-    print("Work lock acquired")
+    #print("Work lock acquired")
 
     workers_array[int(worker_id)-1]+=1   #might have to change logic here
 
-    workLock.release
-    print("Work lock released")
+    workLock.release()
+    #print("Work lock released")
 
 
 
@@ -94,15 +96,16 @@ def listen_worker_updates(worker_updates_addr):
         while True:
             #finalAnswer.acquire()
             #print("Acquired worker lock")
-            data = conn.recv()
+            data = conn.recv(2048)
             if data:
                 data=data.decode('utf-8')
                 worker_id,job_id,task_id=data.split(',')
+                print("WORKER CAME BACK")
                 remDict(job_id,task_id)
                 updateSlots(worker_id)
 
             else:
-                print("All workers have finished executing..")
+              #  print("All workers have finished executing..")
                 break
             
             #finalAnswer.release()
@@ -112,33 +115,32 @@ def listen_worker_updates(worker_updates_addr):
 
 def sendTask(task,worker):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as toWorker:
-		toWorker.connect(("localhost", worker[2]))
-		message=worker[0]+','+task[0]+','+task[1]+','+task[2]
-		#send task to worker
-		toWorker.send(message.encode())
+        toWorker.connect(("localhost", worker[2]))
+        message=str(worker[0])+','+str(task[0])+','+str(task[1])+','+str(task[2])
+        toWorker.send(message.encode()) #send task to worker
 
 
 def round_robin(item):
     done=False
     while not done:
-        rr_choice=(rr_choice+1)%len(workers_array)
+        rr_choice[0]=(rr_choice[0]+1)%len(workers_array)
 
         workLock.acquire()
-        print("Work lock acquired")
+       # print("Work lock acquired")
 
-        if workers_array[rr_choice][1]!=0:
-            workers_array[rr_choice][1]-=1
+        if workers_array[rr_choice[0]][1]!=0:
+            workers_array[rr_choice[0]][1]-=1
             
             workLock.release()
-            print("Work lock released")
+           # print("Work lock released")
 
-            sendTask(item,workers_array[rr_choice])
+            sendTask(item,workers_array[rr_choice[0]])
 
 def least_loaded(item):
     done=False
     while not done:
         workLock.acquire()
-        print("Work lock acquired")
+       # print("Work lock acquired")
 
         maxWorker=0
 
@@ -152,7 +154,7 @@ def least_loaded(item):
             done=True
 
         workLock.release()
-        print("Work lock released")
+       # print("Work lock released")
 
         
 
@@ -162,13 +164,13 @@ def random_sched(item):
         choice=random.randrange(0,len(workers_array))
 
         workLock.acquire()
-        print("Work lock acquired")
+        #print("Work lock acquired")
 
         if workers_array[choice][1]!=0:
             workers_array[choice][1]-=1
             
             workLock.release()
-            print("Work lock released")
+          #  print("Work lock released")
 
             sendTask(item,workers_array[choice])
 
@@ -183,7 +185,7 @@ def scheduleItem(item):
     elif schedule_algo=="LL":
         least_loaded(item)
     else:
-        print("Unexpected scheduling algo, cant predict output")
+        print("Unexpected scheduling algo, program will not work")
 
 
 
@@ -199,10 +201,10 @@ def scheduleTasks():
             flag=1
             item=-1
             queueLock.acquire()
-            print("queue lock acquired")
+            #print("queue lock acquired")
             if not redQ.empty():
                 item=redQ.queue[0]
-                if jobDict[item[0]][0]==[]:#potential dict lock needed here
+                if jobDict[item[0]][0]==[]:#potential dict lock needed here,  need to send some sort of flag indication last reduce task for logging?
                     flag=0
                     item=redQ.get()
             if flag==1 and not mapQ.empty():
@@ -210,7 +212,7 @@ def scheduleTasks():
             if item!=-1:
                 scheduleItem(item)
             queueLock.release()
-            print("queue lock released")
+            #print("queue lock released")
         
         
         
@@ -241,11 +243,11 @@ if __name__ == '__main__':
     receive_jobs_addr = ('localhost', 5000)
     worker_updates_addr = ('localhost', 5001)
 
-    rr_choice=-1
+    rr_choice=[-1]
 
-    dictLock=threading.lock()
-    queueLock=threading.lock()
-    workLock=threading.lock()
+    dictLock=threading.Lock()
+    queueLock=threading.Lock()
+    workLock=threading.Lock()
 
     incJob = threading.Thread(target=listen_incoming_jobs,args=((receive_jobs_addr),))
     incJob.start()

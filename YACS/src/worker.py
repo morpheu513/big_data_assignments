@@ -4,14 +4,14 @@ import time
 
 import sys
 
-def add_to_pool(job_id,task_id,duration):
+def add_to_pool(worker_id,job_id,task_id,duration):
     poolLock.acquire()
-    print("append acquired")
+    #print("append acquired")
 
-    pool.append([job_id,task_id,duration])
+    pool.append([worker_id,job_id,task_id,duration])
 
     poolLock.release()
-    print("append released")
+   # print("append released")
 
 def listen_to_master(messages_addr):
 
@@ -19,7 +19,7 @@ def listen_to_master(messages_addr):
     task_launch_message.bind(messages_addr)
     task_launch_message.listen()
     while True:
-        print("Listening to master....")
+        #print("Listening to master....")
         conn, master_address = task_launch_message.accept()
         while True:
             data = conn.recv(2048)
@@ -29,23 +29,23 @@ def listen_to_master(messages_addr):
                 add_to_pool(worker_id,job_id,task_id,int(duration))
                 pass
             else:
-                print("Master chan is silent")
+              # print("Master chan is silent")
                 break
         conn.close()
 
 def sendNotif(worker_id,job_id,task_id):
+    print("TASK "+task_id+" DONE")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as toMaster:
-		toMaster.connect(("localhost", 5001))
-		message=worker_id+','+job_id+','+task_id
-		#send task
-		toMaster.send(message.encode())
+        toMaster.connect(("localhost", 5001))
+        message=worker_id+','+job_id+','+task_id
+        toMaster.send(message.encode()) #send task
 
 
 def working():
     while True:
 
         poolLock.acquire()
-        print("working acquired")
+       # print("working acquired")
 
         time.sleep(1)
 
@@ -56,7 +56,7 @@ def working():
                 pool.pop(i)
         
         poolLock.release()
-        print("working released")
+       # print("working released")
 
             
 
