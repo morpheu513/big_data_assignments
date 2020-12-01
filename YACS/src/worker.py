@@ -27,7 +27,6 @@ def listen_to_master(messages_addr):
                 data = data.decode('utf-8')
                 worker_id,job_id,task_id,duration=data.split(',')
                 add_to_pool(worker_id,job_id,task_id,int(duration))
-                pass
             else:
               # print("Master chan is silent")
                 break
@@ -49,12 +48,19 @@ def working():
 
         time.sleep(1)
 
+        need_to_pop = list()
+
         for i in range(len(pool)):
+            print(pool,"\n")
             pool[i][3]=pool[i][3]-1
             if pool[i][3]==0:
                 sendNotif(pool[i][0],pool[i][1],pool[i][2])
-                pool.pop(i)
+                #print("POP: ",pool.pop(i),"\n")
+                need_to_pop.append(i)
         
+        for i in sorted(need_to_pop,reverse=True):
+            pool.pop(i)
+
         poolLock.release()
        # print("working released")
 
@@ -77,6 +83,6 @@ if __name__ == '__main__':
 
     doTask= threading.Thread(target=working)
     doTask.start()
-
+    doTask.join()
     
     
