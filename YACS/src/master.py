@@ -1,7 +1,7 @@
 import socket
 import threading
 import sys, json
-#import queue
+import queue
 import random
 import time
 
@@ -9,26 +9,26 @@ import time
 def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
     dictLock.acquire()
     #print("dictlock released \n")
-    queueLock.acquire()
+    #queueLock.acquire()
     #print("Queuelock released \n") 
    # print("Acquired Dict and queue lock")
     jobDict[job_id]=[[],[]]
     for i in map_tasks:
         jobDict[job_id][0].append(i['task_id'])
-        mapQ.append((job_id,i['task_id'],i['duration']))
+        mapQ.put((job_id,i['task_id'],i['duration']))
 
     #print("MAP : ",mapQ,"\n")
 
     for j in reduce_tasks:
         jobDict[job_id][1].append(j['task_id'])
-        redQ.append((job_id,j['task_id'],j['duration']))
+        redQ.put((job_id,j['task_id'],j['duration']))
 
     #print("REDUCE : ",redQ,"\n")
     #print(mapQ.queue[-1])
     #print(redQ.queue[-1])
     #print("Brahmilamila")
-    queueLock.release()
-    #print("Queuelock released \n")
+    #queueLock.release()
+    #print("#queueLock released \n")
     dictLock.release()
     #print("dictlock released \n")
    # print("Releasing Dict and queue lock")
@@ -215,19 +215,19 @@ def scheduleTasks():
         if slots_available():
             flag=1
             item=-1
-            queueLock.acquire()
+            #queueLock.acquire()
             #print("queue lock acquired")
-            if redQ:
-                item=redQ[0]
+            if not redQ.empty():
+                item=redQ.queue[0]
                 if not jobDict[item[0]][0]:#potential dict lock needed here,  need to send some sort of flag indication last reduce task for logging?
                     flag=0
-                    item=redQ.pop(0)
-            if flag==1 and mapQ:
-                item=mapQ.pop(0)
+                    item=redQ.get()
+            if flag==1 and not mapQ.empty():
+                item=mapQ.get()
             if item!=-1:
                 scheduleItem(item)
-            queueLock.release()
-            time.sleep(2) 
+            #queueLock.release()
+            #time.sleep(2) 
         else:
             print("slots are filled go die") 
         #dictLock.release()
@@ -249,8 +249,8 @@ if __name__ == '__main__':
 
     jobDict={}
     
-    mapQ=list()
-    redQ=list()
+    mapQ=queue.Queue()
+    redQ=queue.Queue()
 
     for i in config["workers"]:
         temp = list()
@@ -265,7 +265,7 @@ if __name__ == '__main__':
     rr_choice=[-1]
 
     dictLock=threading.Lock()
-    queueLock=threading.Lock() 
+    #queueLock=threading.Lock() 
     workLock=threading.Lock()
 
     incJob = threading.Thread(target=listen_incoming_jobs,args=((receive_jobs_addr),))
