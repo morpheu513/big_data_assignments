@@ -17,9 +17,9 @@ def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
     for j in reduce_tasks:
         jobDict[job_id][1].append(j['task_id'])
         redQ.put((job_id,j['task_id'],j['duration']))
-    print(mapQ.queue[-1])
-    print(redQ.queue[-1])
-    print("Brahmilamila")
+   # print(mapQ.queue[-1])
+    #print(redQ.queue[-1])
+    #print("Brahmilamila")
     queueLock.release()
     dictLock.release()
    # print("Releasing Dict and queue lock")
@@ -135,6 +135,7 @@ def round_robin(item):
            # print("Work lock released")
 
             sendTask(item,workers_array[rr_choice[0]])
+            done=True
 
 def least_loaded(item):
     done=False
@@ -173,6 +174,7 @@ def random_sched(item):
           #  print("Work lock released")
 
             sendTask(item,workers_array[choice])
+            done=True
 
 
 
@@ -191,7 +193,7 @@ def scheduleItem(item):
 
 def slots_available():
     for i in range(len(workers_array)):
-        if workers_array[i][0]!=0:
+        if workers_array[i][1]!=0:  #CHeck here once
             return True
     return False
 
