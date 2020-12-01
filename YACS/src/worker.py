@@ -59,7 +59,7 @@ def working():
                 need_to_pop.append(i)
         
         for i in sorted(need_to_pop,reverse=True):
-            pool.pop(i)
+            need_to_pop.pop(i)
 
         poolLock.release()
        # print("working released")
@@ -83,6 +83,6 @@ if __name__ == '__main__':
 
     doTask= threading.Thread(target=working)
     doTask.start()
-    doTask.join()
+
     
     

@@ -83,7 +83,7 @@ def remDict(job_id,task_id):
             print("Job with ID: ", job_id," COMPLETED\n")
 
     dictLock.release()
-   # print("released dict lock")
+    print("released dict lock")
 
 def updateSlots(worker_id):
     workLock.acquire()
@@ -218,10 +218,11 @@ def scheduleTasks():
             #queueLock.acquire()
             #print("queue lock acquired")
             if not redQ.empty():
-                item=redQ.queue[0]
-                if not jobDict[item[0]][0]:#potential dict lock needed here,  need to send some sort of flag indication last reduce task for logging?
+                amogha=redQ.queue[0]
+                if jobDict[amogha[0]][0] == []:#potential dict lock needed here,  need to send some sort of flag indication last reduce task for logging?
                     flag=0
                     item=redQ.get()
+                    print("poped reduce queue",item,"\n")
             if flag==1 and not mapQ.empty():
                 item=mapQ.get()
             if item!=-1:
