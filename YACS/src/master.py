@@ -4,6 +4,8 @@ import sys, json
 import queue
 import random
 import time
+import logging
+from datetime import datetime
 
 
 def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
@@ -12,7 +14,7 @@ def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
     #queueLock.acquire()
     #print("Queuelock released \n") 
    # print("Acquired Dict and queue lock")
-    jobDict[job_id]=[[],[]]
+    jobDict[job_id]=[[],[],0]
     for i in map_tasks:
         jobDict[job_id][0].append(i['task_id'])
         mapQ.put((job_id,i['task_id'],i['duration']))
@@ -21,6 +23,7 @@ def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
 
     for j in reduce_tasks:
         jobDict[job_id][1].append(j['task_id'])
+        jobDict[job_id][2]+=1
         redQ.put((job_id,j['task_id'],j['duration']))
 
     #print("REDUCE : ",redQ,"\n")
@@ -51,6 +54,11 @@ def listen_incoming_jobs(receive_jobs_addr):
                 
                 job_id = data["job_id"]
                 print("GOT JOB WITH ID: ", job_id)
+                
+                now = datetime.now()
+                currTime = now.strftime("%H:%M:%S")
+                logging.info('JOB,'+job_id+','+currTime)
+                
                 map_tasks = data["map_tasks"]
                 reduce_tasks = data["reduce_tasks"]
 
@@ -125,9 +133,18 @@ def listen_worker_updates(worker_updates_addr):
         conn.close()
 
 def sendTask(task,worker):
+    
+    isEnd="0"
+    if jobDict[task[0]][2]==0:
+    	isEnd="1"
+    	
+    now = datetime.now()
+    currTime = now.strftime("%H:%M:%S")
+    logging.info('WORKER,'+str(worker[0])+','+currTime)
+                
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as toWorker:
         toWorker.connect(("localhost", worker[2]))
-        message=str(worker[0])+','+str(task[0])+','+str(task[1])+','+str(task[2])
+        message=isEnd+','+str(task[0])+','+str(task[1])+','+str(task[2])+','+schedule_algo  #SENDING SCHEDULING ALGO EVERYTIME
         toWorker.send(message.encode()) #send task to worker
 
 
@@ -211,8 +228,9 @@ def slots_available():
 
 def scheduleTasks():
     while True:
-        #dictLock.acquire() 
+        
         if slots_available():
+            dictLock.acquire() #CHANGED THIS LOCK (ADDED IT BACK)
             flag=1
             item=-1
             #queueLock.acquire()
@@ -222,11 +240,13 @@ def scheduleTasks():
                 if jobDict[amogha[0]][0] == []:#potential dict lock needed here,  need to send some sort of flag indication last reduce task for logging?
                     flag=0
                     item=redQ.get()
-                    print("poped reduce queue",item,"\n")
+                    jobDict[item[0]][2]-=1
+                    print("popped reduce queue",item,"\n")
             if flag==1 and not mapQ.empty():
                 item=mapQ.get()
             if item!=-1:
                 scheduleItem(item)
+            dictLock.release()
             #queueLock.release()
             #time.sleep(2) 
         else:
@@ -245,6 +265,9 @@ if __name__ == '__main__':
 
     config_file = open(path_to_config)
     config = json.load(config_file)
+    
+    fileName=schedule_algo+'/master'+schedule_algo+'.csv'
+    logging.basicConfig(level=logging.INFO,filename=fileName, filemode='w', format='%(message)s')
 
     workers_array = list()
 
