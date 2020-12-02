@@ -59,7 +59,8 @@ def working():
         poolLock.acquire()
        # print("working acquired")
 
-        time.sleep(1)
+        if pool:
+            time.sleep(1)
 
         need_to_pop = list()
 
