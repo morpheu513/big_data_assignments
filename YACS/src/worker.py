@@ -70,11 +70,12 @@ def working():
                 
                 currTime = datetime.now()
                 #currTime = now.strftime("%H:%M:%S")
-                if pool[i][0]=="0":
-                	timeDiff=currTime-taskLog[pool[i][2]]
-                	taskTime=timeDiff.total_seconds()
-                	logging.info('TASK,'+pool[i][2]+','+str(taskTime))
-                else:
+                
+                timeDiff=currTime-taskLog[pool[i][2]]
+                taskTime=timeDiff.total_seconds()     
+                logging.info('TASK,'+pool[i][2]+','+str(taskTime))
+                
+                if pool[i][0]=="1":
                 	jobTime=currTime.strftime("%H:%M:%S")
                 	logging.info('JOB,'+pool[i][1]+','+jobTime)
                 
