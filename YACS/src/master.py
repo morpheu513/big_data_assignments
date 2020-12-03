@@ -9,8 +9,8 @@ from datetime import datetime
 
 
 def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
-    dictLock.acquire()
-    #print("dictlock released \n")
+    #dictLock.acquire()
+    #print("#dictLock released \n")
     #queueLock.acquire()
     #print("Queuelock released \n") 
    # print("Acquired Dict and queue lock")
@@ -32,8 +32,8 @@ def addToDict_and_queue(job_id,map_tasks,reduce_tasks):
     #print("Brahmilamila")
     #queueLock.release()
     #print("#queueLock released \n")
-    dictLock.release()
-    #print("dictlock released \n")
+    #dictLock.release()
+    #print("#dictLock released \n")
    # print("Releasing Dict and queue lock")
 
 def listen_incoming_jobs(receive_jobs_addr):
@@ -79,7 +79,7 @@ def listen_incoming_jobs(receive_jobs_addr):
         conn.close()
 
 def remDict(job_id,task_id):
-    dictLock.acquire()
+    #dictLock.acquire()
     print("acquired dict lock in rem dict")
 
     if 'M' in task_id:
@@ -90,16 +90,16 @@ def remDict(job_id,task_id):
             #print("JOBS ARE ACTUALLY GETTING COMPLETED")
             print("Job with ID: ", job_id," COMPLETED\n")
 
-    dictLock.release()
+    #dictLock.release()
     print("released dict lock")
 
 def updateSlots(worker_id):
-    workLock.acquire()
+    #workLock.acquire()
     print("Work lock acquired in update slots")
 
     workers_array[int(worker_id)-1][1]+=1   #might have to change logic here
 
-    workLock.release()
+    #workLock.release()
     #print("Work lock released")
 
 
@@ -153,13 +153,13 @@ def round_robin(item):
     while not done:
         rr_choice[0]=(rr_choice[0]+1)%len(workers_array)
 
-        workLock.acquire()
+        #workLock.acquire()
        # print("Work lock acquired")
 
         if workers_array[rr_choice[0]][1]!=0:
             workers_array[rr_choice[0]][1]-=1
             
-            workLock.release()
+            #workLock.release()
            # print("Work lock released")
 
             sendTask(item,workers_array[rr_choice[0]])
@@ -168,7 +168,7 @@ def round_robin(item):
 def least_loaded(item):
     done=False
     while not done:
-        workLock.acquire()
+        #workLock.acquire()
        # print("Work lock acquired")
 
         maxWorker=0
@@ -183,7 +183,7 @@ def least_loaded(item):
             sendTask(item,workers_array[maxWorker])
             done=True
 
-        workLock.release()
+        #workLock.release()
        # print("Work lock released")
 
         
@@ -193,13 +193,13 @@ def random_sched(item):
     while not done:
         choice=random.randrange(0,len(workers_array))
 
-        workLock.acquire()
+        #workLock.acquire()
         #print("Work lock acquired")
 
         if workers_array[choice][1]!=0:
             workers_array[choice][1]-=1
             
-            workLock.release()
+            #workLock.release()
           #  print("Work lock released")
 
             sendTask(item,workers_array[choice])
@@ -230,7 +230,7 @@ def scheduleTasks():
     while True:
         
         if slots_available():
-            dictLock.acquire() #CHANGED THIS LOCK (ADDED IT BACK)
+            #dictLock.acquire() #CHANGED THIS LOCK (ADDED IT BACK)
             flag=1
             item=-1
             #queueLock.acquire()
@@ -246,12 +246,12 @@ def scheduleTasks():
                 item=mapQ.get()
             if item!=-1:
                 scheduleItem(item)
-            dictLock.release()
+            #dictLock.release()
             #queueLock.release()
             #time.sleep(2) 
         else:
             print("slots are filled go die") 
-        #dictLock.release()
+        ##dictLock.release()
             #print("queue lock released")
         
         
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     
     fileName=schedule_algo+'/master'+schedule_algo+'.csv'
     logging.basicConfig(level=logging.INFO,filename=fileName, filemode='w', format='%(message)s')
-
+    logging.info('Type,ID,Time')
     workers_array = list()
 
     jobDict={}
@@ -288,9 +288,9 @@ if __name__ == '__main__':
 
     rr_choice=[-1]
 
-    dictLock=threading.Lock()
+    #dictLock=threading.Lock()
     #queueLock=threading.Lock() 
-    workLock=threading.Lock()
+    #workLock=threading.Lock()
 
     incJob = threading.Thread(target=listen_incoming_jobs,args=((receive_jobs_addr),))
     incJob.start()

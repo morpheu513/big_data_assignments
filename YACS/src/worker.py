@@ -33,6 +33,7 @@ def listen_to_master(messages_addr):
                 	fileName=schedule_algo+'/worker'+worker_id+'.csv'
                 	print("HERE: ",fileName) #FIRST COMMUNICATION HAPPENED, WHY NO TICKING DOWN?
                 	logging.basicConfig(level=logging.INFO,filename=fileName, filemode='w', format='%(message)s')
+                	logging.info('Type,ID,Time')
                 	logFlag[0]=0
                 
                 now = datetime.now()
@@ -60,7 +61,7 @@ def working():
        # print("working acquired")
 
         if pool:
-            time.sleep(1)
+        	time.sleep(1)
 
         need_to_pop = list()
 
@@ -71,12 +72,11 @@ def working():
                 
                 currTime = datetime.now()
                 #currTime = now.strftime("%H:%M:%S")
-                
-                timeDiff=currTime-taskLog[pool[i][2]]
-                taskTime=timeDiff.total_seconds()     
-                logging.info('TASK,'+pool[i][2]+','+str(taskTime))
-                
-                if pool[i][0]=="1":
+                if pool[i][0]=="0":
+                	timeDiff=currTime-taskLog[pool[i][2]]
+                	taskTime=timeDiff.total_seconds()
+                	logging.info('TASK,'+pool[i][2]+','+str(taskTime))
+                else:
                 	jobTime=currTime.strftime("%H:%M:%S")
                 	logging.info('JOB,'+pool[i][1]+','+jobTime)
                 
