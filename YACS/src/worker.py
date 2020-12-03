@@ -102,8 +102,8 @@ if __name__ == '__main__':
     messages_addr = ('localhost', port)
     
     logFlag=[1]  #NEED TO MAYBE CHANGE IMPLEMENTATION OF THIS LATER
-    fileName='worker'+worker_id+'.csv'
-    logging.basicConfig(level=logging.INFO,filename=fileName, filemode='w', format='%(message)s')
+    #fileName='worker'+worker_id+'.csv'
+    #logging.basicConfig(level=logging.INFO,filename=fileName, filemode='w', format='%(message)s')
     taskLog={}
 
     poolLock=threading.Lock()
