@@ -123,8 +123,8 @@ if __name__ == '__main__':
     port  = int(sys.argv[1])
     worker_id = sys.argv[2]
     
-    #Flag variable to check if we need to 
-    logFlag=[1]  #NEED TO MAYBE CHANGE IMPLEMENTATION OF THIS LATER
+    #Flag variable to check if we need to create the log file
+    logFlag=[1]  
     
     #keeps track of start time of task in order to calculate the task run time
     taskLog={}
