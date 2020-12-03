@@ -31,7 +31,7 @@ def listen_to_master(messages_addr):
                 
                 if logFlag[0]:
                 	fileName=schedule_algo+'/worker'+worker_id+'.csv'
-                	print("HERE: ",fileName) #FIRST COMMUNICATION HAPPENED, WHY NO TICKING DOWN?
+                	print("HERE: ",fileName) 
                 	logging.basicConfig(level=logging.INFO,filename=fileName, filemode='w', format='%(message)s')
                 	logging.info('Type,ID,Time')
                 	logFlag[0]=0
@@ -61,32 +61,32 @@ def working():
        # print("working acquired")
 
         if pool:
-        	time.sleep(1)
+            time.sleep(1)
 
-        need_to_pop = list()
+            need_to_pop = list()
 
-        for i in range(len(pool)):
-            print(pool,"\n")
-            pool[i][3]=pool[i][3]-1
-            if pool[i][3]==0:
+            for i in range(len(pool)):
+                print(pool,"\n")
+                pool[i][3]=pool[i][3]-1
+                if pool[i][3]==0:
                 
-                currTime = datetime.now()
-                #currTime = now.strftime("%H:%M:%S")
-                if pool[i][0]=="0":
-                	timeDiff=currTime-taskLog[pool[i][2]]
-                	taskTime=timeDiff.total_seconds()
-                	logging.info('TASK,'+pool[i][2]+','+str(taskTime))
-                else:
-                	jobTime=currTime.strftime("%H:%M:%S")
-                	logging.info('JOB,'+pool[i][1]+','+jobTime)
+                    currTime = datetime.now()
+                    #currTime = now.strftime("%H:%M:%S")
+                
+                    timeDiff=currTime-taskLog[pool[i][2]]
+                    taskTime=timeDiff.total_seconds()
+                    logging.info('TASK,'+pool[i][2]+','+str(taskTime))
+                    if pool[i][0]=="1":
+                        jobTime=currTime.strftime("%H:%M:%S")
+                        logging.info('JOB,'+pool[i][1]+','+jobTime)
                 
                 
-                sendNotif(pool[i][1],pool[i][2])
-                #print("POP: ",pool.pop(i),"\n")
-                need_to_pop.append(i)
+                    sendNotif(pool[i][1],pool[i][2])
+                    #print("POP: ",pool.pop(i),"\n")
+                    need_to_pop.append(i)
         
-        for i in sorted(need_to_pop,reverse=True):
-            pool.pop(i)
+            for i in sorted(need_to_pop,reverse=True):
+                pool.pop(i)
 
         poolLock.release()
        # print("working released")
