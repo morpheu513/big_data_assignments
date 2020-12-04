@@ -43,15 +43,18 @@ for algo in ['RR','LL','RANDOM']:
     df_worker['Time'] = pd.to_datetime(df_worker['Time'])
 
     exec_times = np.ndarray(shape=(len(df_master.index),1))
-    for i in range(len(df_master.index)):
+    for i in range(len(df_worker.index)):
         tot_exec_time = 0
-        exec_time = df_worker['Time'].iloc[i] - df_master['Time'].iloc[i]
+        if df_worker['Time'].iloc[i]>df_master['Time'].iloc[i]:
+        	exec_time = df_worker['Time'].iloc[i] - df_master['Time'].iloc[i]
+        else:
+        	exec_time = df_master['Time'].iloc[i] - df_worker['Time'].iloc[i]
         try:
             minutes = time_exec.minutes
         except:
             minutes = 0
     
-        tot_exec_time = (minutes*60) + int(exec_time.seconds)
+        tot_exec_time = (int(minutes)*60) + int(exec_time.seconds)
         exec_times[i] = tot_exec_time   
     print("FOR:",algo)
     print("Mean task completion time: ",mean_task)
