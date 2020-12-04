@@ -18,10 +18,6 @@ for algo in ['RR','LL','RANDOM']:
     #reading files
     df_master_initial = pd.read_csv(master_path)
 
-    #df_master_initial=pd.read_csv('masterLL(10).csv')
-    #df_w1=pd.read_csv('worker1LL(10).csv')
-    #df_w2=pd.read_csv('worker2LL(10).csv')
-    #df_w3=pd.read_csv('worker3LL(10).csv')
 
     #calculating mean/median task and job completion times
     df_master = df_master_initial.loc[df_master_initial['Type'] == 'JOB']
@@ -31,6 +27,7 @@ for algo in ['RR','LL','RANDOM']:
     mean_task = df_worker.loc[df_worker['Type'] == 'TASK']['Time'].astype(float).mean()
     median_task = df_worker.loc[df_worker['Type'] == 'TASK']['Time'].astype(float).median()
 
+    df_master['ID']=df_master['ID'].astype(int)
     df_master = df_master.set_index('ID')
     df_master = df_master.sort_index()
     df_master['Time'] = pd.to_datetime(df_master['Time'])
@@ -38,6 +35,7 @@ for algo in ['RR','LL','RANDOM']:
     #df_worker = pd.concat([df_w1,df_w2,df_w3])
     df_worker = pd.concat(workers)
     df_worker = df_worker.loc[df_worker['Type'] == 'JOB']
+    df_worker['ID']=df_worker['ID'].astype(int)
     df_worker = df_worker.set_index('ID')
     df_worker = df_worker.sort_index()
     df_worker['Time'] = pd.to_datetime(df_worker['Time'])
@@ -45,6 +43,7 @@ for algo in ['RR','LL','RANDOM']:
     exec_times = np.ndarray(shape=(len(df_master.index),1))
     for i in range(len(df_worker.index)):
         tot_exec_time = 0
+        #print(df_worker['Time'].iloc[i]," : ",df_master['Time'].iloc[i])
         if df_worker['Time'].iloc[i]>df_master['Time'].iloc[i]:
         	exec_time = df_worker['Time'].iloc[i] - df_master['Time'].iloc[i]
         else:
@@ -54,7 +53,9 @@ for algo in ['RR','LL','RANDOM']:
         except:
             minutes = 0
     
-        tot_exec_time = (int(minutes)*60) + int(exec_time.seconds)
+        
+        tot_exec_time =int(exec_time.seconds)
+        #print(tot_exec_time)
         exec_times[i] = tot_exec_time   
     print("FOR:",algo)
     print("Mean task completion time: ",mean_task)
