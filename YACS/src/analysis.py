@@ -8,8 +8,8 @@ n_machines = int(sys.argv[1])
 for algo in ['RR','LL','RANDOM']:
     scheduling_algo = algo
 
-    master_path = '../data/'+scheduling_algo+'master'+scheduling_algo+'.csv'
-    main_worker_path = '../data/'+scheduling_algo+'worker'
+    master_path = '../data/'+scheduling_algo+'/master'+scheduling_algo+'.csv'
+    main_worker_path = '../data/'+scheduling_algo+'/worker'
     workers = list()
     for i in range(n_machines):
         workers.append(pd.read_csv(main_worker_path+str(i+1)+'.csv'))
@@ -53,11 +53,12 @@ for algo in ['RR','LL','RANDOM']:
     
         tot_exec_time = (minutes*60) + int(exec_time.seconds)
         exec_times[i] = tot_exec_time   
-
+    print("FOR:",algo)
     print("Mean task completion time: ",mean_task)
     print("Median task completion time: ",median_task)
     print("Mean job completion time: ",exec_times.mean())
     print("Median job completion time: ", np.median(exec_times))
+    print("\n")
 
 
     #plotting graphs
