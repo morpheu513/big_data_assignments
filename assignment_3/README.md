@@ -1,29 +1,12 @@
 # Assignment 3
 Chuck code for the third assignment here.
 
-## Spec Sheet:
-The link to the specification sheet can be found [here](https://forum.pesu.io/uploads/short-url/potTewXPT3ETwqWvNvwQdHW35WJ.pdf)
-<br>
-The spec sheet is present on this repository as well so you can just check that out. 
-
-## Dataset link:
-The Data set can be downloaded from [here](https://drive.google.com/drive/folders/1gRKrDTdjMHwwaWfesPGw76xHyUZTVIJl)
-<br># Assignment 3
-Chuck code for the third assignment here.
-
-## Spec Sheet:
-The link to the specification sheet can be found [here](https://forum.pesu.io/uploads/short-url/potTewXPT3ETwqWvNvwQdHW35WJ.pdf)
-<br>
-The spec sheet is present on this repository as well so you can just check that out. 
-
 ## Dataset link:
 The Data set can be downloaded from [here](https://drive.google.com/drive/folders/1gRKrDTdjMHwwaWfesPGw76xHyUZTVIJl)
 <br>
 Make sure you download both the files.
 
 ## Installing Spark:
-The demo video made by KVS showing installation can be viewed [here](https://vimeo.com/459271132/18111a409c)
-
 First download the archived file from Apache's [website](https://www.apache.org/dyn/closer.lua/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz)
 <br>
 Once thats done extract the files into 
@@ -139,12 +122,4 @@ hdfs dfs -put '<path-to-file-on-host-pc>' /<path-to-directory-on-hdfs>
       ```
       spark-submit <filename.py> <word> <strokes> hdfs://localhost:9000/<path-to-dataset-1> hdfs://localhost:9000/<path-to-dataset-2>
       ```
-## Hands on Session:
-The hands on session with Spark can be found [here](https://vimeo.com/459272013/f8197d7732)
-<br>
-The source code used in this video can be downloaded from [here](https://drive.google.com/file/d/1dSqOgDfDjCzGPkBfW8nN5krfInGC_PvV/view)
-<br> 
-The dataset used for this hands on session can be found [here](https://drive.google.com/file/d/1Ei6JZ7SF5ze00xsKPU9EHKGzxR3c3uCm/view)
-
-Make sure you download both the files.
 
